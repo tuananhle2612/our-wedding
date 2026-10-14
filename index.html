@@ -27,7 +27,7 @@ section{max-width:900px;margin:0 auto;padding:72px 20px}
 .btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:12px}
 .btn{padding:12px 24px;border-radius:30px;border:1px solid var(--accent);color:var(--accent);text-decoration:none;font-size:15px}
 .btn.fill{background:var(--accent);color:#fff}
-h2{font-size:clamp(28px,6vw,42px);margin-bottom:8px}.sub{color:var(--muted);margin-bottom:36px}
+h2{font-size:clamp(28px,6vw,42px);margin-bottom:8px}.sub{color:var(--muted);margin-bottom:36px}#story h2{margin-bottom:36px}
 .story{display:grid;gap:40px}
 .chap h3{font-size:24px;color:var(--accent);margin-bottom:12px}
 .pair{display:flex;gap:10px;justify-content:center;margin-bottom:10px}
@@ -56,7 +56,7 @@ footer{padding:60px 20px 90px;color:var(--muted)}
   <div class="btns reveal"><a class="btn fill" href="#photos" data-i="seePhotos"></a><a class="btn" href="#venue" data-i="invite"></a></div>
 </header>
 
-<section id="story"><h2 class="reveal" data-i="storyTitle"></h2><p class="sub" data-i="storySub"></p><div class="story" id="storyBox"></div></section>
+<section id="story"><h2 class="reveal" data-i="storyTitle"></h2><div class="story" id="storyBox"></div></section>
 
 <section id="photos"><h2 class="reveal" data-i="photosTitle"></h2><p class="sub" data-i="photosSub"></p><div class="gal" id="gal"></div></section>
 
@@ -72,14 +72,14 @@ footer{padding:60px 20px 90px;color:var(--muted)}
 <script>
 // ===== EDIT THIS BLOCK =====
 const C={
-  groom:"Tên Chú Rể", bride:"Tên Cô Dâu",
+  groom:"Lê Tuấn Anh", bride:"Nguyễn Hồng Thư",
   date:"2026-12-20",                       // YYYY-MM-DD
   music:"",                                // e.g. "music/song.mp3"
   mapUrl:"https://maps.google.com/?q=Da+Nang",
   // Story chapters: photos are file paths (leave [] for placeholders)
   story:[
-    {vi:"Chú rể tí hon",en:"Little groom",tvi:"Khi ấy, cu cậu còn nhỏ và nghịch ngợm",ten:"Small and mischievous back then",photos:["photos/story/groom_1.jpg","photos/story/groom_2.jpg"]},
-    {vi:"Cô dâu tí hon",en:"Little bride",tvi:"Còn cô bé thì dễ thương chưa nè",ten:"And the bride was already adorable",photos:["photos/story/bride_1.jpg","photos/story/bride_2.jpg"]},
+    
+    
     {vi:"Ngày mình gặp nhau",en:"The day we met",tvi:"Chúng mình đồng ý làm người yêu từ đây",ten:"Where our story together began",photos:["photos/story/met_1.jpg"]}
   ],
   gallery:Array.from({length:12},(_,i)=>`photos/wedding/${i+1}.jpg`),
@@ -89,8 +89,8 @@ const C={
   ]
 };
 const T={
- vi:{gate:"Chạm vào đây nhé",tagline:"Chúng mình sắp về chung một nhà!",seePhotos:"Xem ảnh cưới",invite:"Mời dự tiệc",storyTitle:"Chuyện của chúng mình",storySub:"Từ những ngày bé đến hôm nay",photosTitle:"Album cưới",photosSub:"Những khoảnh khắc đáng nhớ",venueTitle:"Thư mời",venueSub:"Rất hân hạnh được đón tiếp bạn",map:"Xem bản đồ",thanks:"Cảm ơn mọi người đã tới và chung vui cùng cô dâu chú rể",promise:"Chúng mình hứa sẽ sống thật hạnh phúc ♥"},
- en:{gate:"Touch here",tagline:"We're getting married!",seePhotos:"See photos",invite:"You're invited",storyTitle:"Our Story",storySub:"From little ones to today",photosTitle:"Wedding Album",photosSub:"Moments to remember",venueTitle:"Invitation",venueSub:"We'd be honored to have you with us",map:"Open map",thanks:"Thank you for celebrating with us",promise:"We promise to be happy together ♥"}
+ vi:{gate:"Chạm vào đây nhé",tagline:"Chúng mình sắp về chung một nhà!",seePhotos:"Xem ảnh cưới",invite:"Mời dự tiệc",storyTitle:"Chuyện của chúng mình",photosTitle:"Album cưới",photosSub:"Những khoảnh khắc đáng nhớ",venueTitle:"Thư mời",venueSub:"Rất hân hạnh được đón tiếp bạn",map:"Xem bản đồ",thanks:"Cảm ơn mọi người đã tới và chung vui cùng cô dâu chú rể",promise:"Chúng mình hứa sẽ sống thật hạnh phúc ♥"},
+ en:{gate:"Touch here",tagline:"We're getting married!",seePhotos:"See photos",invite:"You're invited",storyTitle:"Our Story",photosTitle:"Wedding Album",photosSub:"Moments to remember",venueTitle:"Invitation",venueSub:"We'd be honored to have you with us",map:"Open map",thanks:"Thank you for celebrating with us",promise:"We promise to be happy together ♥"}
 };
 let lang="vi";const $=s=>document.querySelector(s);
 const ph=(src,label)=>{const d=document.createElement("div");d.className="ph";d.innerHTML=`<span>${label||"Photo"}</span>`;if(src){const i=new Image();i.onload=()=>{d.innerHTML="";d.appendChild(i)};i.alt="";i.src=src}d.onclick=()=>{const i=d.querySelector("img");if(i){$("#lb img").src=i.src;$("#lb").classList.add("open")}};return d};
