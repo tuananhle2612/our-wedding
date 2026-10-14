@@ -30,9 +30,9 @@ section{max-width:900px;margin:0 auto;padding:72px 20px}
 h2{font-size:clamp(28px,6vw,42px);margin-bottom:8px}.sub{color:var(--muted);margin-bottom:36px}#story h2{margin-bottom:36px}
 .story{display:grid;gap:40px}
 .chap h3{font-size:24px;color:var(--accent);margin-bottom:12px}
-.pair{display:flex;gap:10px;justify-content:center;margin-bottom:10px}
-.ph{flex:1;max-width:260px;aspect-ratio:3/4;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 30%,var(--card)),var(--card));display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;cursor:zoom-in}
-.ph img{width:100%;height:100%;object-fit:cover}
+.pair{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:640px;margin:0 auto 10px;align-items:start}.pair .ph:last-child:nth-child(odd){grid-column:1/-1;justify-self:center;width:calc(50% - 5px)}
+.ph{aspect-ratio:3/4;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 30%,var(--card)),var(--card));display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;cursor:zoom-in}
+.ph img{width:100%;height:auto;display:block}
 .gal{columns:2 150px;column-gap:10px}.gal .ph{max-width:none;margin-bottom:10px;break-inside:avoid;aspect-ratio:auto;min-height:160px}.gal .ph:nth-child(3n){min-height:240px}
 .card{background:var(--card);border-radius:16px;padding:28px;max-width:520px;margin:0 auto;box-shadow:0 8px 30px rgba(0,0,0,.07)}
 .card p{margin:6px 0}
@@ -93,7 +93,7 @@ const T={
  en:{gate:"Touch here",tagline:"We're getting married!",seePhotos:"See photos",invite:"You're invited",storyTitle:"Our Story",photosTitle:"Wedding Album",photosSub:"Moments to remember",venueTitle:"Invitation",venueSub:"We'd be honored to have you with us",map:"Open map",thanks:"Thank you for celebrating with us",promise:"We promise to be happy together ♥"}
 };
 let lang="vi";const $=s=>document.querySelector(s);
-const ph=(src,label)=>{const d=document.createElement("div");d.className="ph";d.innerHTML=`<span>${label||"Photo"}</span>`;if(src){const i=new Image();i.onload=()=>{d.innerHTML="";d.appendChild(i)};i.alt="";i.src=src}d.onclick=()=>{const i=d.querySelector("img");if(i){$("#lb img").src=i.src;$("#lb").classList.add("open")}};return d};
+const ph=(src,label)=>{const d=document.createElement("div");d.className="ph";d.innerHTML=`<span>${label||"Photo"}</span>`;if(src){const i=new Image();i.onload=()=>{d.innerHTML="";d.style.aspectRatio="auto";d.style.minHeight="0";d.appendChild(i)};i.alt="";i.src=src}d.onclick=()=>{const i=d.querySelector("img");if(i){$("#lb img").src=i.src;$("#lb").classList.add("open")}};return d};
 function render(){
   document.documentElement.lang=lang;
   document.querySelectorAll("[data-i]").forEach(e=>e.textContent=T[lang][e.dataset.i]);
@@ -102,7 +102,7 @@ function render(){
   $("#mapBtn").href=C.mapUrl;
   $("#events").innerHTML=C.events.map(e=>`<div class="card"><h3>${e[lang]}</h3><p style="color:var(--accent);font-size:24px">${e.time}</p><p>${e.place}</p><p style="color:var(--muted)">${e.addr}</p></div>`).join("");
   $("#storyBox").innerHTML="";
-  C.story.forEach(s=>{const c=document.createElement("div");c.className="chap reveal";c.innerHTML=`<h3>${s[lang]}</h3>`;const p=document.createElement("div");p.className="pair";(s.photos.length?s.photos:[null,null]).forEach(x=>p.appendChild(ph(x)));c.appendChild(p);c.insertAdjacentHTML("beforeend",`<p>${lang==="vi"?s.tvi:s.ten}</p>`);$("#storyBox").appendChild(c)});
+  C.story.forEach(s=>{const c=document.createElement("div");c.className="chap reveal";c.innerHTML=(s[lang]||s.vi)?`<h3>${s[lang]||s.vi}</h3>`:"";const p=document.createElement("div");p.className="pair";(s.photos.length?s.photos:[null,null]).forEach(x=>p.appendChild(ph(x)));c.appendChild(p);c.insertAdjacentHTML("beforeend",`<p>${(lang==="vi"?s.tvi:s.ten)||s.tvi||""}</p>`);$("#storyBox").appendChild(c)});
   $("#gal").innerHTML="";C.gallery.forEach(x=>$("#gal").appendChild(ph(x)));
   observe();
 }
