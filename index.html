@@ -93,7 +93,7 @@ const T={
  en:{gate:"Touch here",tagline:"We're getting married!",seePhotos:"See photos",invite:"You're invited",storyTitle:"Our Story",photosTitle:"Wedding Album",photosSub:"Moments to remember",venueTitle:"Invitation",venueSub:"We'd be honored to have you with us",map:"Open map",thanks:"Thank you for celebrating with us",promise:"We promise to be happy together ♥"}
 };
 let lang="vi";const $=s=>document.querySelector(s);
-const ph=(src,label)=>{const d=document.createElement("div");d.className="ph";d.innerHTML=`<span>${label||"Photo"}</span>`;if(src){const i=new Image();i.onload=()=>{d.innerHTML="";d.style.aspectRatio="auto";d.style.minHeight="0";d.appendChild(i)};i.alt="";i.src=src}d.onclick=()=>{const i=d.querySelector("img");if(i){$("#lb img").src=i.src;$("#lb").classList.add("open")}};return d};
+const ph=(src,label,hide)=>{const d=document.createElement("div");d.className="ph";d.innerHTML=`<span>${label||"Photo"}</span>`;if(src){const i=new Image();i.onload=()=>{d.innerHTML="";d.style.aspectRatio="auto";d.style.minHeight="0";d.appendChild(i)};i.alt="";const base=src.replace(/\.[^.\/]+$/,""),cands=[src,...["jpg","jpeg","png","webp","JPG","JPEG","PNG"].map(e=>base+"."+e)];let k=0;i.onerror=()=>{if(++k<cands.length)i.src=cands[k];else if(hide)d.remove()};i.src=src}d.onclick=()=>{const i=d.querySelector("img");if(i){$("#lb img").src=i.src;$("#lb").classList.add("open")}};return d};
 function render(){
   document.documentElement.lang=lang;
   document.querySelectorAll("[data-i]").forEach(e=>e.textContent=T[lang][e.dataset.i]);
@@ -103,7 +103,7 @@ function render(){
   $("#events").innerHTML=C.events.map(e=>`<div class="card"><h3>${e[lang]}</h3><p style="color:var(--accent);font-size:24px">${e.time}</p><p>${e.place}</p><p style="color:var(--muted)">${e.addr}</p></div>`).join("");
   $("#storyBox").innerHTML="";
   C.story.forEach(s=>{const c=document.createElement("div");c.className="chap reveal";c.innerHTML=(s[lang]||s.vi)?`<h3>${s[lang]||s.vi}</h3>`:"";const p=document.createElement("div");p.className="pair";(s.photos.length?s.photos:[null,null]).forEach(x=>p.appendChild(ph(x)));c.appendChild(p);c.insertAdjacentHTML("beforeend",`<p>${(lang==="vi"?s.tvi:s.ten)||s.tvi||""}</p>`);$("#storyBox").appendChild(c)});
-  $("#gal").innerHTML="";C.gallery.forEach(x=>$("#gal").appendChild(ph(x)));
+  $("#gal").innerHTML="";C.gallery.forEach(x=>$("#gal").appendChild(ph(x,"",true)));
   observe();
 }
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.15});
