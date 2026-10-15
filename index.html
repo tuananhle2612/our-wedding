@@ -45,6 +45,9 @@ footer{padding:60px 20px 90px;color:var(--muted)}
 .fab{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:40;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font-size:18px;text-decoration:none}
 #lb{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:60;display:none;align-items:center;justify-content:center;padding:20px}
 #lb.open{display:flex}#lb img{max-width:100%;max-height:100%;border-radius:8px}
+#lb button{position:absolute;top:50%;transform:translateY(-50%);border:1px solid rgba(255,255,255,.6);border-radius:50%;width:44px;height:44px;background:rgba(0,0,0,.35);color:#fff;font:inherit;font-size:26px;cursor:pointer}
+#lb button:focus-visible{outline:2px solid #fff;outline-offset:3px}
+#lb .prev{left:16px}#lb .next{right:16px}
 </style>
 </head>
 <body>
@@ -74,7 +77,11 @@ footer{padding:60px 20px 90px;color:var(--muted)}
 
 <footer><p data-i="thanks"></p><p data-i="promise"></p></footer>
 <a class="fab" href="#hero" aria-label="Back to top">↑</a>
-<div id="lb"><img alt=""></div>
+<div id="lb" role="dialog" aria-modal="true" aria-label="Wedding photos">
+  <button class="prev" type="button" aria-label="Ảnh trước">&#8249;</button>
+  <img alt="">
+  <button class="next" type="button" aria-label="Ảnh tiếp theo">&#8250;</button>
+</div>
 
 <script>
 // ===== EDIT THIS BLOCK =====
@@ -103,7 +110,22 @@ const T={
 };
 let lang="vi";const $=s=>document.querySelector(s);
 const EXT=["jpg","jpeg","png","webp","JPG","JPEG","PNG"];
-const ph=(src,label,hide)=>{const d=document.createElement("div");d.className="ph";d.innerHTML=`<span>${label||"Photo"}</span>`;if(src){const i=document.createElement("img");i.loading="lazy";i.decoding="async";i.alt="";const base=src.replace(/\.[^.\/]+$/,""),cands=[src,...EXT.map(e=>base+"."+e)];let k=0;i.onload=()=>{const sp=d.querySelector("span");if(sp)sp.remove();d.classList.add("loaded");d.style.aspectRatio="auto";d.style.minHeight="0"};i.onerror=()=>{if(++k<cands.length)i.src=cands[k];else if(hide)d.remove()};i.src=src;d.appendChild(i)}d.onclick=()=>{if(d.classList.contains("loaded")){$("#lb img").src=d.querySelector("img").src;$("#lb").classList.add("open")}};return d};
+let lbIndex=0;
+const lightboxImages=()=>[...document.querySelectorAll(".ph.loaded img")];
+function showLightboxImage(index){
+  const images=lightboxImages();
+  if(!images.length)return;
+  lbIndex=(index+images.length)%images.length;
+  $("#lb img").src=images[lbIndex].src;
+}
+function openLightbox(image){
+  const images=lightboxImages();
+  lbIndex=images.indexOf(image);
+  $("#lb").classList.add("open");
+  document.querySelectorAll(".ph img").forEach(img=>img.loading="eager");
+  showLightboxImage(lbIndex);
+}
+const ph=(src,label,hide)=>{const d=document.createElement("div");d.className="ph";d.innerHTML=`<span>${label||"Photo"}</span>`;if(src){const i=document.createElement("img");i.loading="lazy";i.decoding="async";i.alt="";const base=src.replace(/\.[^.\/]+$/,""),cands=[src,...EXT.map(e=>base+"."+e)];let k=0;i.onload=()=>{const sp=d.querySelector("span");if(sp)sp.remove();d.classList.add("loaded");d.style.aspectRatio="auto";d.style.minHeight="0"};i.onerror=()=>{if(++k<cands.length)i.src=cands[k];else if(hide)d.remove()};i.src=src;d.appendChild(i)}d.onclick=()=>{if(d.classList.contains("loaded"))openLightbox(d.querySelector("img"))};return d};
 function render(){
   document.documentElement.lang=lang;
   document.querySelectorAll("[data-i]").forEach(e=>e.textContent=T[lang][e.dataset.i]);
@@ -122,7 +144,16 @@ $("#langBtn").onclick=e=>{lang=lang==="vi"?"en":"vi";e.target.textContent=lang.t
 let audio=null;
 $("#musicBtn").onclick=e=>{if(!audio)return;audio.paused?audio.play():audio.pause();e.target.classList.toggle("on",!audio.paused)};
 $("#gate").onclick=()=>{$("#gate").classList.add("hide");if(C.music){audio=new Audio(C.music);audio.loop=true;audio.play().then(()=>$("#musicBtn").classList.add("on")).catch(()=>{})}};
-$("#lb").onclick=()=>$("#lb").classList.remove("open");
+$("#lb .prev").onclick=e=>{e.stopPropagation();showLightboxImage(lbIndex-1)};
+$("#lb .next").onclick=e=>{e.stopPropagation();showLightboxImage(lbIndex+1)};
+$("#lb img").onclick=e=>e.stopPropagation();
+$("#lb").onclick=e=>{if(e.target===$("#lb"))$("#lb").classList.remove("open")};
+document.addEventListener("keydown",e=>{
+  if(!$("#lb").classList.contains("open"))return;
+  if(e.key==="Escape")$("#lb").classList.remove("open");
+  if(e.key==="ArrowLeft")showLightboxImage(lbIndex-1);
+  if(e.key==="ArrowRight")showLightboxImage(lbIndex+1);
+});
 render();
 </script>
 </body>
