@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Anh&Thu Wedding</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,500&family=Be+Vietnam+Pro:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fbf6f1;--fg:#3a2e2a;--muted:#8a7a72;--accent:#b5655a;--card:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1e1816;--fg:#f1e7e1;--muted:#a89790;--accent:#e0968a;--card:#2a2220}}
+:root[data-theme="dark"]{--bg:#1e1816;--fg:#f1e7e1;--muted:#a89790;--accent:#e0968a;--card:#2a2220}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:'Be Vietnam Pro',system-ui,sans-serif;line-height:1.6;text-align:center}
+h1,h2,h3{font-family:'Playfair Display',Georgia,serif;font-weight:500;margin:0}
+section{max-width:900px;margin:0 auto;padding:72px 20px}
+.reveal{opacity:0;transform:translateY(24px);transition:.8s}.reveal.in{opacity:1;transform:none}
+#gate{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;cursor:pointer;transition:opacity .8s}
+#gate.hide{opacity:0;pointer-events:none}
+#gate .heart{font-size:56px;animation:beat 1.4s infinite}
+#gate .gate-prompt{display:inline-block;animation:beat 1.4s infinite}
+#gate .gate-arrows{padding:0 8px}
+@keyframes beat{50%{transform:scale(1.15)}}
+.bar{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:12px;z-index:40;display:flex;gap:8px}
+.bar button{border:1px solid var(--accent);background:var(--card);color:var(--accent);border-radius:20px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer}
+.bar button.on{background:var(--accent);color:#fff}
+#hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--accent) 22%,var(--bg)),var(--bg) 70%)}
+#hero h1{font-size:clamp(40px,10vw,84px)}#hero .amp{color:var(--accent);font-style:italic}
+.date{letter-spacing:.3em;color:var(--muted)}
+.btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+.btn{padding:12px 24px;border-radius:30px;border:1px solid var(--accent);color:var(--accent);text-decoration:none;font-size:15px}
+.btn.fill{background:var(--accent);color:#fff}
+h2{font-size:clamp(28px,6vw,42px);margin-bottom:8px}.sub{color:var(--muted);margin-bottom:36px}#story h2{margin-bottom:36px}
+.story{display:grid;grid-template-columns:minmax(0,1fr);gap:40px}
+.chap h3{font-size:24px;color:var(--accent);margin-bottom:12px}
+.pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%;margin:0 0 10px;align-items:start}.pair .ph:last-child:nth-child(odd){grid-column:1/-1;justify-self:center;width:calc(50% - 5px)}
+.ph{aspect-ratio:3/4;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 30%,var(--card)),var(--card));display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;cursor:zoom-in}
+.ph img{width:100%;height:auto;display:block}
+.gal{columns:2 150px;column-gap:10px}.gal .ph{max-width:none;margin-bottom:10px;break-inside:avoid;aspect-ratio:auto;min-height:160px}.gal .ph:nth-child(3n){min-height:240px}
+.card{background:var(--card);border-radius:16px;padding:28px;max-width:520px;margin:0 auto;box-shadow:0 8px 30px rgba(0,0,0,.07)}
+.card p{margin:6px 0}
+.ev{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.ev .card{flex:1;min-width:230px}
+footer{padding:60px 20px 90px;color:var(--muted)}
+.fab{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:40;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font-size:18px;text-decoration:none}
+#lb{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:60;display:none;align-items:center;justify-content:center;padding:20px}
+#lb.open{display:flex}#lb img{max-width:100%;max-height:100%;border-radius:8px}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="heart">💍</div>
+  <div class="gate-prompt"><span class="gate-arrows" aria-hidden="true">&gt;&gt;&gt;</span><span data-i="gate"></span><span class="gate-arrows" aria-hidden="true">&lt;&lt;&lt;</span></div>
+  <div class="gate-prompt"><span class="gate-arrows" aria-hidden="true">&gt;&gt;&gt;</span>Touch Here<span class="gate-arrows" aria-hidden="true">&lt;&lt;&lt;</span></div>
+</div>
+<div class="bar"><button id="langBtn" class="on">VI</button><button id="musicBtn">♪</button></div>
+
+<header id="hero">
+  <div class="date reveal" id="dateTxt"></div>
+  <h1 class="reveal"><span id="n1"></span> <span class="amp">&amp;</span> <span id="n2"></span></h1>
+  <p class="reveal" data-i="tagline"></p>
+  <div class="btns reveal"><a class="btn fill" href="#photos" data-i="seePhotos"></a><a class="btn" href="#venue" data-i="invite"></a></div>
+</header>
+
+<section id="story"><h2 class="reveal" data-i="storyTitle"></h2><div class="story" id="storyBox"></div></section>
+
+<section id="photos"><h2 class="reveal" data-i="photosTitle"></h2><p class="sub" data-i="photosSub"></p><div class="gal" id="gal"></div></section>
+
+<section id="venue"><h2 class="reveal" data-i="venueTitle"></h2><p class="sub" data-i="venueSub"></p>
+  <div class="ev" id="events"></div>
+  <a class="btn fill" id="mapBtn" target="_blank" rel="noopener" data-i="map"></a>
+</section>
+
+<footer><p data-i="thanks"></p><p data-i="promise"></p></footer>
+<a class="fab" href="#hero" aria-label="Back to top">↑</a>
+<div id="lb"><img alt=""></div>
+
+<script>
+// ===== EDIT THIS BLOCK =====
+const C={
+  groom:"Lê Tuấn Anh", bride:"Nguyễn Hồng Thư",
+  date:"2027-01-23",                       // YYYY-MM-DD
+  music:"music/song.mp3",                                // e.g. "music/song.mp3"
+  mapUrl:"https://maps.google.com/?q=Da+Nang",
+  // Story chapters: photos are file paths (leave [] for placeholders)
+  story:[
+    
+    
+    {vi:"Ngày mình gặp nhau",en:"The day we met",photos:["photos/story/met_1.jpg","photos/story/met_2.jpg","photos/story/met_3.jpg","photos/story/met_4.jpg"]},
+    {vi:"Những khoảnh khắc đáng nhớ",en:"Memorable moments",tvi:"Chúng mình đồng ý làm người yêu từ đây",ten:"Where our story together began",photos:["photos/story/met_5.jpg","photos/story/met_6.jpg","photos/story/met_7.jpg","photos/story/met_8.jpg","photos/story/met_9.jpg","photos/story/met_10.jpg","photos/story/met_11.jpg","photos/story/met_12.jpg"]},
+    {tvi:"Và rồi...",ten:"And...",photos:["photos/story/met_13.jpg","photos/story/met_14.jpg","photos/story/met_15.jpg","photos/story/met_16.jpg","photos/story/met_17.jpg","photos/story/met_18.jpg","photos/story/met_19.jpg","photos/story/met_20.jpg"]}
+  ],
+  gallery:Array.from({length:12},(_,i)=>`photos/wedding/${i+1}.jpg`),
+  events:[
+    {vi:"Lễ thành hôn",en:"Ceremony",time:"10:00",place:"Nhà hàng / Venue name",addr:"Địa chỉ / Address, Đà Nẵng"},
+    {vi:"Tiệc cưới",en:"Reception",time:"18:00",place:"Nhà hàng / Venue name",addr:"Địa chỉ / Address, Đà Nẵng"}
+  ]
+};
+const T={
+ vi:{gate:"Chạm vào đây nhé",tagline:"Chúng mình sắp về chung một nhà!",seePhotos:"Xem ảnh cưới",invite:"Mời dự tiệc",storyTitle:"Chuyện của chúng mình",photosTitle:"Album cưới",photosSub:"Wedding Album",venueTitle:"Thư mời",venueSub:"Rất hân hạnh được đón tiếp bạn",map:"Xem bản đồ",thanks:"Cảm ơn mọi người đã tới và chung vui cùng cô dâu chú rể",promise:"Chúng mình hứa sẽ sống thật hạnh phúc ♥"},
+ en:{gate:"Touch here",tagline:"We're getting married!",seePhotos:"See photos",invite:"You're invited",storyTitle:"Our Story",photosTitle:"Wedding Album",photosSub:"Moments to remember",venueTitle:"Invitation",venueSub:"We'd be honored to have you with us",map:"Open map",thanks:"Thank you for celebrating with us",promise:"We promise to be happy together ♥"}
+};
+let lang="vi";const $=s=>document.querySelector(s);
+const ph=(src,label,hide)=>{const d=document.createElement("div");d.className="ph";d.innerHTML=`<span>${label||"Photo"}</span>`;if(src){const i=new Image();i.onload=()=>{d.innerHTML="";d.style.aspectRatio="auto";d.style.minHeight="0";d.appendChild(i)};i.alt="";const base=src.replace(/\.[^.\/]+$/,""),cands=[src,...["jpg","jpeg","png","webp","JPG","JPEG","PNG"].map(e=>base+"."+e)];let k=0;i.onerror=()=>{if(++k<cands.length)i.src=cands[k];else if(hide)d.remove()};i.src=src}d.onclick=()=>{const i=d.querySelector("img");if(i){$("#lb img").src=i.src;$("#lb").classList.add("open")}};return d};
+function render(){
+  document.documentElement.lang=lang;
+  document.querySelectorAll("[data-i]").forEach(e=>e.textContent=T[lang][e.dataset.i]);
+  $("#n1").textContent=C.groom;$("#n2").textContent=C.bride;
+  $("#dateTxt").textContent=new Date(C.date+"T00:00").toLocaleDateString(lang==="vi"?"vi-VN":"en-GB",{day:"2-digit",month:"2-digit",year:"numeric"}).replaceAll("/",". ");
+  $("#mapBtn").href=C.mapUrl;
+  $("#events").innerHTML=C.events.map(e=>`<div class="card"><h3>${e[lang]}</h3><p style="color:var(--accent);font-size:24px">${e.time}</p><p>${e.place}</p><p style="color:var(--muted)">${e.addr}</p></div>`).join("");
+  $("#storyBox").innerHTML="";
+  C.story.forEach(s=>{const c=document.createElement("div");c.className="chap reveal";c.innerHTML=(s[lang]||s.vi)?`<h3>${s[lang]||s.vi}</h3>`:"";const p=document.createElement("div");p.className="pair";(s.photos.length?s.photos:[null,null]).forEach(x=>p.appendChild(ph(x)));c.appendChild(p);c.insertAdjacentHTML("beforeend",`<p>${(lang==="vi"?s.tvi:s.ten)||s.tvi||""}</p>`);$("#storyBox").appendChild(c)});
+  $("#gal").innerHTML="";C.gallery.forEach(x=>$("#gal").appendChild(ph(x,"",true)));
+  observe();
+}
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.15});
+function observe(){document.querySelectorAll(".reveal:not(.in)").forEach(e=>io.observe(e))}
+$("#langBtn").onclick=e=>{lang=lang==="vi"?"en":"vi";e.target.textContent=lang.toUpperCase();render()};
+let audio=null;
+$("#musicBtn").onclick=e=>{if(!audio)return;audio.paused?audio.play():audio.pause();e.target.classList.toggle("on",!audio.paused)};
+$("#gate").onclick=()=>{$("#gate").classList.add("hide");if(C.music){audio=new Audio(C.music);audio.loop=true;audio.play().then(()=>$("#musicBtn").classList.add("on")).catch(()=>{})}};
+$("#lb").onclick=()=>$("#lb").classList.remove("open");
+render();
+</script>
+</body>
+</html>
