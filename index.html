@@ -27,6 +27,11 @@ section{max-width:900px;margin:0 auto;padding:72px 20px}
 #hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--accent) 22%,var(--bg)),var(--bg) 70%)}
 #hero h1{font-size:clamp(40px,10vw,84px)}#hero .amp{color:var(--accent);font-style:italic}
 .date{letter-spacing:.3em;color:var(--muted)}
+.countdown{margin:8px 0 4px}.countdown-title{margin:0 0 12px;color:var(--muted);font-size:14px}
+.countdown-units{display:flex;gap:10px;justify-content:center}
+.countdown-unit{width:clamp(54px,20vw,84px);padding:10px 6px;border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);border-radius:12px;background:color-mix(in srgb,var(--card) 65%,transparent)}
+.countdown-value{display:block;color:var(--accent);font-family:'Playfair Display',Georgia,serif;font-size:clamp(24px,6vw,36px);line-height:1.1;font-variant-numeric:tabular-nums}
+.countdown-label{display:block;margin-top:4px;color:var(--muted);font-size:11px}
 .btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:12px}
 .btn{padding:12px 24px;border-radius:30px;border:1px solid var(--accent);color:var(--accent);text-decoration:none;font-size:15px}
 .btn.fill{background:var(--accent);color:#fff}
@@ -62,6 +67,15 @@ footer .qrcode{display:block;width:min(300px,80vw);height:auto;margin:28px auto 
 
 <header id="hero">
   <div class="date reveal" id="dateTxt"></div>
+  <div class="countdown reveal" id="countdown" aria-label="">
+    <p class="countdown-title" data-i="countdownTitle"></p>
+    <div class="countdown-units">
+      <div class="countdown-unit"><span class="countdown-value" id="countDays">0</span><span class="countdown-label" data-i="days"></span></div>
+      <div class="countdown-unit"><span class="countdown-value" id="countHours">00</span><span class="countdown-label" data-i="hours"></span></div>
+      <div class="countdown-unit"><span class="countdown-value" id="countMinutes">00</span><span class="countdown-label" data-i="minutes"></span></div>
+      <div class="countdown-unit"><span class="countdown-value" id="countSeconds">00</span><span class="countdown-label" data-i="seconds"></span></div>
+    </div>
+  </div>
   <h1 class="reveal"><span id="n1"></span> <span class="amp">&amp;</span> <span id="n2"></span></h1>
   <p class="reveal" data-i="tagline"></p>
   <div class="btns reveal"><a class="btn fill" href="#photos" data-i="seePhotos"></a><a class="btn" href="#venue" data-i="invite"></a></div>
@@ -88,7 +102,8 @@ footer .qrcode{display:block;width:min(300px,80vw);height:auto;margin:28px auto 
 // ===== EDIT THIS BLOCK =====
 const C={
   groom:"Lê Tuấn Anh", bride:"Nguyễn Hồng Thư",
-  date:"2027-01-23",                       // YYYY-MM-DD
+  date:"2027-01-23",                       // Wedding date: YYYY-MM-DD
+  ceremonyTime:"10:00",                   // Ceremony time: HH:MM (Vietnam time)
   music:"music/song.mp3",                                // e.g. "music/song.mp3"
   mapUrl:"https://maps.google.com/?q=Da+Nang",
   // Story chapters: photos are file paths (leave [] for placeholders)
@@ -101,13 +116,13 @@ const C={
   ],
   gallery:Array.from({length:12},(_,i)=>`photos/wedding/${i+1}.jpg`),
   events:[
-    {vi:"Lễ thành hôn",en:"Ceremony",time:"10:00",place:"Nhà hàng / Venue name",addr:"Địa chỉ / Address, Đà Nẵng"},
+    {vi:"Lễ thành hôn",en:"Ceremony",place:"Nhà hàng / Venue name",addr:"Địa chỉ / Address, Đà Nẵng"},
     {vi:"Tiệc cưới",en:"Reception",time:"18:00",place:"Nhà hàng / Venue name",addr:"Địa chỉ / Address, Đà Nẵng"}
   ]
 };
 const T={
- vi:{gate:"Chạm vào đây nhé",tagline:"Chúng mình sắp về chung một nhà!",seePhotos:"Xem ảnh cưới",invite:"Mời dự tiệc",storyTitle:"Chuyện của chúng mình",photosTitle:"Album cưới",photosSub:"Wedding Album",venueTitle:"Thư mời",venueSub:"Rất hân hạnh được đón tiếp bạn",map:"Xem bản đồ",thanks:"Cảm ơn mọi người đã tới và chung vui cùng cô dâu chú rể",promise:"Chúng mình hứa sẽ sống thật hạnh phúc ♥"},
- en:{gate:"Touch here",tagline:"We're getting married!",seePhotos:"See photos",invite:"You're invited",storyTitle:"Our Story",photosTitle:"Wedding Album",photosSub:"Moments to remember",venueTitle:"Invitation",venueSub:"We'd be honored to have you with us",map:"Open map",thanks:"Thank you for celebrating with us",promise:"We promise to be happy together ♥"}
+ vi:{gate:"Chạm vào đây nhé",tagline:"Chúng mình sắp về chung một nhà!",countdownTitle:"Còn lại",days:"Ngày",hours:"Giờ",minutes:"Phút",seconds:"Giây",countdownDone:"Ngày vui của chúng mình đã đến!",seePhotos:"Xem ảnh cưới",invite:"Mời dự tiệc",storyTitle:"Chuyện của chúng mình",photosTitle:"Album cưới",photosSub:"Wedding Album",venueTitle:"Thư mời",venueSub:"Rất hân hạnh được đón tiếp bạn",map:"Xem bản đồ",thanks:"Cảm ơn mọi người đã tới và chung vui cùng cô dâu chú rể",promise:"Chúng mình hứa sẽ sống thật hạnh phúc ♥"},
+ en:{gate:"Touch here",tagline:"We're getting married!",countdownTitle:"Counting down",days:"Days",hours:"Hours",minutes:"Minutes",seconds:"Seconds",countdownDone:"Our special day is here!",seePhotos:"See photos",invite:"You're invited",storyTitle:"Our Story",photosTitle:"Wedding Album",photosSub:"Moments to remember",venueTitle:"Invitation",venueSub:"We'd be honored to have you with us",map:"Open map",thanks:"Thank you for celebrating with us",promise:"We promise to be happy together ♥"}
 };
 let lang="vi";const $=s=>document.querySelector(s);
 const EXT=["jpg","jpeg","png","webp","JPG","JPEG","PNG"];
@@ -132,12 +147,31 @@ function render(){
   document.querySelectorAll("[data-i]").forEach(e=>e.textContent=T[lang][e.dataset.i]);
   $("#n1").textContent=C.groom;$("#n2").textContent=C.bride;
   $("#dateTxt").textContent=new Date(C.date+"T00:00").toLocaleDateString(lang==="vi"?"vi-VN":"en-GB",{day:"2-digit",month:"2-digit",year:"numeric"}).replaceAll("/",". ");
+  updateCountdown();
   $("#mapBtn").href=C.mapUrl;
-  $("#events").innerHTML=C.events.map(e=>`<div class="card"><h3>${e[lang]}</h3><p style="color:var(--accent);font-size:24px">${e.time}</p><p>${e.place}</p><p style="color:var(--muted)">${e.addr}</p></div>`).join("");
+  $("#events").innerHTML=C.events.map((e,i)=>`<div class="card"><h3>${e[lang]}</h3><p style="color:var(--accent);font-size:24px">${e.time||(!i?C.ceremonyTime:"")}</p><p>${e.place}</p><p style="color:var(--muted)">${e.addr}</p></div>`).join("");
   $("#storyBox").innerHTML="";
   C.story.forEach(s=>{const c=document.createElement("div");c.className="chap reveal";c.innerHTML=(s[lang]||s.vi)?`<h3>${s[lang]||s.vi}</h3>`:"";const p=document.createElement("div");p.className="pair";(s.photos.length?s.photos:[null,null]).forEach(x=>p.appendChild(ph(x)));c.appendChild(p);c.insertAdjacentHTML("beforeend",`<p>${(lang==="vi"?s.tvi:s.ten)||s.tvi||""}</p>`);$("#storyBox").appendChild(c)});
   $("#gal").innerHTML="";C.gallery.forEach(x=>$("#gal").appendChild(ph(x,"",true)));
   observe();
+}
+function updateCountdown(){
+  const target=Date.parse(`${C.date}T${C.ceremonyTime}:00+07:00`);
+  const remaining=Math.max(0,target-Date.now());
+  const totalSeconds=Math.floor(remaining/1000);
+  const values={
+    days:Math.floor(totalSeconds/86400),
+    hours:Math.floor(totalSeconds%86400/3600),
+    minutes:Math.floor(totalSeconds%3600/60),
+    seconds:totalSeconds%60
+  };
+  $("#countDays").textContent=values.days;
+  $("#countHours").textContent=String(values.hours).padStart(2,"0");
+  $("#countMinutes").textContent=String(values.minutes).padStart(2,"0");
+  $("#countSeconds").textContent=String(values.seconds).padStart(2,"0");
+  const units=["days","hours","minutes","seconds"].map(key=>`${values[key]} ${T[lang][key]}`).join(", ");
+  $("#countdown").setAttribute("aria-label",remaining===0?T[lang].countdownDone:`${T[lang].countdownTitle}: ${units}`);
+  $("#countdown .countdown-title").textContent=remaining===0?T[lang].countdownDone:T[lang].countdownTitle;
 }
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.15});
 function observe(){document.querySelectorAll(".reveal:not(.in)").forEach(e=>io.observe(e))}
@@ -156,6 +190,7 @@ document.addEventListener("keydown",e=>{
   if(e.key==="ArrowRight")showLightboxImage(lbIndex+1);
 });
 render();
+setInterval(updateCountdown,1000);
 </script>
 </body>
 </html>
