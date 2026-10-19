@@ -33,7 +33,7 @@ section{max-width:900px;margin:0 auto;padding:72px 20px}
 .countdown-value{display:block;color:var(--accent);font-family:'Playfair Display',Georgia,serif;font-size:clamp(24px,6vw,36px);line-height:1.1;font-variant-numeric:tabular-nums}
 .countdown-label{display:block;margin-top:4px;color:var(--muted);font-size:11px}
 .btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:12px}
-.btn{padding:12px 24px;border-radius:30px;border:1px solid var(--accent);color:var(--accent);text-decoration:none;font-size:15px}
+.btn{padding:12px 24px;border-radius:30px;border:1px solid var(--accent);color:var(--accent);background:transparent;font:inherit;font-size:15px;text-decoration:none;cursor:pointer}
 .btn.fill{background:var(--accent);color:#fff}
 h2{font-size:clamp(28px,6vw,42px);margin-bottom:8px}.sub{color:var(--muted);margin-bottom:36px}#story h2{margin-bottom:36px}
 .story{display:grid;grid-template-columns:minmax(0,1fr);gap:40px}
@@ -87,7 +87,10 @@ footer .qrcode{display:block;width:min(300px,80vw);height:auto;margin:28px auto 
 
 <section id="venue"><h2 class="reveal" data-i="venueTitle"></h2><p class="sub" data-i="venueSub"></p>
   <div class="ev" id="events"></div>
-  <a class="btn fill" id="mapBtn" target="_blank" rel="noopener" data-i="map"></a>
+  <div class="btns">
+    <a class="btn fill" id="mapBtn" target="_blank" rel="noopener" data-i="map"></a>
+    <button class="btn" id="calendarBtn" type="button" data-i="addToCalendar"></button>
+  </div>
 </section>
 
 <footer><p data-i="thanks"></p><p data-i="promise"></p><img class="qrcode" src="photos/qrcode/qrcode.jpg?v=2" alt="Mã QR"></footer>
@@ -121,8 +124,8 @@ const C={
   ]
 };
 const T={
- vi:{gate:"Chạm vào đây nhé",tagline:"Chúng mình sắp về chung một nhà!",countdownTitle:"Còn lại",days:"Ngày",hours:"Giờ",minutes:"Phút",seconds:"Giây",countdownDone:"Ngày vui của chúng mình đã đến!",seePhotos:"Xem ảnh cưới",invite:"Mời dự tiệc",storyTitle:"Chuyện của chúng mình",photosTitle:"Album cưới",photosSub:"Wedding Album",venueTitle:"Thư mời",venueSub:"Rất hân hạnh được đón tiếp bạn",map:"Xem bản đồ",thanks:"Cảm ơn mọi người đã tới và chung vui cùng cô dâu chú rể",promise:"Chúng mình hứa sẽ sống thật hạnh phúc ♥"},
- en:{gate:"Touch here",tagline:"We're getting married!",countdownTitle:"Counting down",days:"Days",hours:"Hours",minutes:"Minutes",seconds:"Seconds",countdownDone:"Our special day is here!",seePhotos:"See photos",invite:"You're invited",storyTitle:"Our Story",photosTitle:"Wedding Album",photosSub:"Moments to remember",venueTitle:"Invitation",venueSub:"We'd be honored to have you with us",map:"Open map",thanks:"Thank you for celebrating with us",promise:"We promise to be happy together ♥"}
+ vi:{gate:"Chạm vào đây nhé",tagline:"Chúng mình sắp về chung một nhà!",countdownTitle:"Còn lại",days:"Ngày",hours:"Giờ",minutes:"Phút",seconds:"Giây",countdownDone:"Ngày vui của chúng mình đã đến!",seePhotos:"Xem ảnh cưới",invite:"Mời dự tiệc",storyTitle:"Chuyện của chúng mình",photosTitle:"Album cưới",photosSub:"Wedding Album",venueTitle:"Thư mời",venueSub:"Rất hân hạnh được đón tiếp bạn",map:"Xem bản đồ",addToCalendar:"Thêm vào Lịch",thanks:"Cảm ơn mọi người đã tới và chung vui cùng cô dâu chú rể",promise:"Chúng mình hứa sẽ sống thật hạnh phúc ♥"},
+ en:{gate:"Touch here",tagline:"We're getting married!",countdownTitle:"Counting down",days:"Days",hours:"Hours",minutes:"Minutes",seconds:"Seconds",countdownDone:"Our special day is here!",seePhotos:"See photos",invite:"You're invited",storyTitle:"Our Story",photosTitle:"Wedding Album",photosSub:"Moments to remember",venueTitle:"Invitation",venueSub:"We'd be honored to have you with us",map:"Open map",addToCalendar:"Add to Calendar",thanks:"Thank you for celebrating with us",promise:"We promise to be happy together ♥"}
 };
 let lang="vi";const $=s=>document.querySelector(s);
 const EXT=["jpg","jpeg","png","webp","JPG","JPEG","PNG"];
@@ -155,6 +158,65 @@ function render(){
   $("#gal").innerHTML="";C.gallery.forEach(x=>$("#gal").appendChild(ph(x,"",true)));
   observe();
 }
+function escapeIcsText(value){
+  return String(value).replace(/\\/g,"\\\\").replace(/\n/g,"\\n").replace(/,/g,"\\,").replace(/;/g,"\\;");
+}
+function foldIcsLine(line){
+  const folded=[];
+  let segment="",byteLength=0,limit=75;
+  for(const character of line){
+    const characterBytes=new TextEncoder().encode(character).length;
+    if(byteLength+characterBytes>limit){
+      folded.push(segment);
+      segment=` ${character}`;
+      byteLength=1+characterBytes;
+      limit=75;
+    }else{
+      segment+=character;
+      byteLength+=characterBytes;
+    }
+  }
+  folded.push(segment);
+  return folded.join("\r\n");
+}
+function addToCalendar(){
+  const weddingDate=new Date(`${C.date}T00:00:00Z`);
+  if(Number.isNaN(weddingDate.getTime()))throw new Error(`Invalid wedding date: ${C.date}`);
+  const dateStamp=date=>date.toISOString().slice(0,10).replaceAll("-","");
+  const endDate=new Date(weddingDate);
+  endDate.setUTCDate(endDate.getUTCDate()+1);
+  const agenda=C.events.map((event,index)=>{
+    const time=event.time||(!index?C.ceremonyTime:"");
+    return [event[lang],time,event.place,event.addr].filter(Boolean).join(" - ");
+  }).join("\n");
+  const location=C.events[0]?[C.events[0].place,C.events[0].addr].filter(Boolean).join(", "):"";
+  const lines=[
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Anh&Thu Wedding//Wedding Invitation//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    "BEGIN:VEVENT",
+    `UID:${dateStamp(weddingDate)}-${encodeURIComponent(C.groom)}-${encodeURIComponent(C.bride)}@our-wedding`,
+    `DTSTAMP:${new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"")}`,
+    `DTSTART;VALUE=DATE:${dateStamp(weddingDate)}`,
+    `DTEND;VALUE=DATE:${dateStamp(endDate)}`,
+    `SUMMARY:${escapeIcsText(`${C.groom} & ${C.bride} - ${lang==="vi"?"Ngày cưới":"Wedding day"}`)}`,
+    `LOCATION:${escapeIcsText(location)}`,
+    `DESCRIPTION:${escapeIcsText(agenda)}`,
+    "END:VEVENT",
+    "END:VCALENDAR"
+  ];
+  const calendar=new Blob([lines.map(foldIcsLine).join("\r\n")+"\r\n"],{type:"text/calendar;charset=utf-8"});
+  const url=URL.createObjectURL(calendar);
+  const link=document.createElement("a");
+  link.href=url;
+  link.download="wedding.ics";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
 function updateCountdown(){
   const target=Date.parse(`${C.date}T${C.ceremonyTime}:00+07:00`);
   const remaining=Math.max(0,target-Date.now());
@@ -176,6 +238,7 @@ function updateCountdown(){
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.15});
 function observe(){document.querySelectorAll(".reveal:not(.in)").forEach(e=>io.observe(e))}
 $("#langBtn").onclick=e=>{lang=lang==="vi"?"en":"vi";e.target.textContent=lang.toUpperCase();render()};
+$("#calendarBtn").onclick=addToCalendar;
 let audio=null;
 $("#musicBtn").onclick=e=>{if(!audio)return;audio.paused?audio.play():audio.pause();e.target.classList.toggle("on",!audio.paused)};
 $("#gate").onclick=()=>{$("#gate").classList.add("hide");if(C.music){audio=new Audio(C.music);audio.loop=true;audio.play().then(()=>$("#musicBtn").classList.add("on")).catch(()=>{})}};
