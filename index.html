@@ -119,8 +119,8 @@ const C={
   ],
   gallery:Array.from({length:12},(_,i)=>`photos/wedding/${i+1}.jpg`),
   events:[
-    {vi:"Lễ thành hôn",en:"Ceremony",place:"Nhà hàng / Venue name",addr:"Địa chỉ / Address, Đà Nẵng"},
-    {vi:"Tiệc cưới",en:"Reception",time:"18:00",place:"Nhà hàng / Venue name",addr:"Địa chỉ / Address, Đà Nẵng"}
+    {vi:"Lễ thành hôn",en:"Ceremony",placeVi:"Tư Gia Nam",placeEn:"Family Home",addrVi:"16 Phú Lộc 2, Thanh Khê, Đà Nẵng",addrEn:"16 Phu Loc 2, Thanh Khe, Da Nang"},
+    {vi:"Tiệc cưới",en:"Reception",time:"11:00",place:"Nhà hàng / Venue name",addr:"Địa chỉ / Address, Đà Nẵng"}
   ]
 };
 const T={
@@ -128,6 +128,8 @@ const T={
  en:{gate:"Touch here",tagline:"We're getting married!",countdownTitle:"Counting down",days:"Days",hours:"Hours",minutes:"Minutes",seconds:"Seconds",countdownDone:"Our special day is here!",seePhotos:"See photos",invite:"You're invited",storyTitle:"Our Story",photosTitle:"Wedding Album",photosSub:"Moments to remember",venueTitle:"Invitation",venueSub:"We'd be honored to have you with us",map:"Open map",addToCalendar:"Add to Calendar",thanks:"Thank you for celebrating with us",promise:"We promise to be happy together ♥"}
 };
 let lang="vi";const $=s=>document.querySelector(s);
+const eventAddress=event=>event[`addr${lang==="vi"?"Vi":"En"}`]||event.addr||"";
+const eventPlace=event=>event[`place${lang==="vi"?"Vi":"En"}`]||event.place||"";
 const EXT=["jpg","jpeg","png","webp","JPG","JPEG","PNG"];
 let lbIndex=0;
 const lightboxImages=()=>[...document.querySelectorAll(".ph.loaded img")];
@@ -152,7 +154,7 @@ function render(){
   $("#dateTxt").textContent=new Date(C.date+"T00:00").toLocaleDateString(lang==="vi"?"vi-VN":"en-GB",{day:"2-digit",month:"2-digit",year:"numeric"}).replaceAll("/",". ");
   updateCountdown();
   $("#mapBtn").href=C.mapUrl;
-  $("#events").innerHTML=C.events.map((e,i)=>`<div class="card"><h3>${e[lang]}</h3><p style="color:var(--accent);font-size:24px">${e.time||(!i?C.ceremonyTime:"")}</p><p>${e.place}</p><p style="color:var(--muted)">${e.addr}</p></div>`).join("");
+  $("#events").innerHTML=C.events.map((e,i)=>`<div class="card"><h3>${e[lang]}</h3><p style="color:var(--accent);font-size:24px">${e.time||(!i?C.ceremonyTime:"")}</p><p>${eventPlace(e)}</p><p style="color:var(--muted)">${eventAddress(e)}</p></div>`).join("");
   $("#storyBox").innerHTML="";
   C.story.forEach(s=>{const c=document.createElement("div");c.className="chap reveal";c.innerHTML=(s[lang]||s.vi)?`<h3>${s[lang]||s.vi}</h3>`:"";const p=document.createElement("div");p.className="pair";(s.photos.length?s.photos:[null,null]).forEach(x=>p.appendChild(ph(x)));c.appendChild(p);c.insertAdjacentHTML("beforeend",`<p>${(lang==="vi"?s.tvi:s.ten)||s.tvi||""}</p>`);$("#storyBox").appendChild(c)});
   $("#gal").innerHTML="";C.gallery.forEach(x=>$("#gal").appendChild(ph(x,"",true)));
@@ -187,9 +189,9 @@ function addToCalendar(){
   endDate.setUTCDate(endDate.getUTCDate()+1);
   const agenda=C.events.map((event,index)=>{
     const time=event.time||(!index?C.ceremonyTime:"");
-    return [event[lang],time,event.place,event.addr].filter(Boolean).join(" - ");
+    return [event[lang],time,eventPlace(event),eventAddress(event)].filter(Boolean).join(" - ");
   }).join("\n");
-  const location=C.events[0]?[C.events[0].place,C.events[0].addr].filter(Boolean).join(", "):"";
+  const location=C.events[0]?[eventPlace(C.events[0]),eventAddress(C.events[0])].filter(Boolean).join(", "):"";
   const lines=[
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -218,7 +220,8 @@ function addToCalendar(){
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 function updateCountdown(){
-  const target=Date.parse(`${C.date}T${C.ceremonyTime}:00+07:00`);
+  const receptionTime=C.events.find(event=>event.en==="Reception")?.time||C.ceremonyTime;
+  const target=Date.parse(`${C.date}T${receptionTime}:00+07:00`);
   const remaining=Math.max(0,target-Date.now());
   const totalSeconds=Math.floor(remaining/1000);
   const values={
