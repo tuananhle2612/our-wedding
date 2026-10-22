@@ -191,7 +191,8 @@ function addToCalendar(){
     const time=event.time||(!index?C.ceremonyTime:"");
     return [event[lang],time,eventPlace(event),eventAddress(event)].filter(Boolean).join(" - ");
   }).join("\n");
-  const location=C.events[0]?[eventPlace(C.events[0]),eventAddress(C.events[0])].filter(Boolean).join(", "):"";
+  const locationEvent=C.events.find(event=>event.en==="Reception")||C.events[0];
+  const location=locationEvent?[eventPlace(locationEvent),eventAddress(locationEvent)].filter(Boolean).join(", "):"";
   const lines=[
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
