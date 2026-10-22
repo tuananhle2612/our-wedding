@@ -49,7 +49,7 @@ h2{font-size:clamp(28px,6vw,42px);margin-bottom:8px}.sub{color:var(--muted);marg
 footer{padding:60px 20px 90px;color:var(--muted)}
 footer .qrcode{display:block;width:min(150px,40vw);height:auto;margin:28px auto 0}
 .fab{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:40;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font-size:18px;text-decoration:none}
-#lb{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:60;display:none;align-items:center;justify-content:center;padding:20px}
+#lb{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:60;display:none;align-items:center;justify-content:center;padding:20px;touch-action:pan-y}
 #lb.open{display:flex}#lb img{max-width:100%;max-height:100%;border-radius:8px}
 #lb button{position:absolute;top:50%;transform:translateY(-50%);border:1px solid rgba(255,255,255,.6);border-radius:50%;width:44px;height:44px;background:rgba(0,0,0,.35);color:#fff;font:inherit;font-size:26px;cursor:pointer}
 #lb button:focus-visible{outline:2px solid #fff;outline-offset:3px}
@@ -132,6 +132,7 @@ const eventAddress=event=>event[`addr${lang==="vi"?"Vi":"En"}`]||event.addr||"";
 const eventPlace=event=>event[`place${lang==="vi"?"Vi":"En"}`]||event.place||"";
 const EXT=["jpg","jpeg","png","webp","JPG","JPEG","PNG"];
 let lbIndex=0;
+let lbTouchStart=null;
 const lightboxImages=()=>[...document.querySelectorAll(".ph.loaded img")];
 function showLightboxImage(index){
   const images=lightboxImages();
@@ -250,6 +251,18 @@ $("#lb .prev").onclick=e=>{e.stopPropagation();showLightboxImage(lbIndex-1)};
 $("#lb .next").onclick=e=>{e.stopPropagation();showLightboxImage(lbIndex+1)};
 $("#lb img").onclick=e=>e.stopPropagation();
 $("#lb").onclick=e=>{if(e.target===$("#lb"))$("#lb").classList.remove("open")};
+$("#lb").addEventListener("touchstart",e=>{
+  lbTouchStart=e.touches.length===1?{x:e.touches[0].clientX,y:e.touches[0].clientY}:null;
+},{passive:true});
+$("#lb").addEventListener("touchend",e=>{
+  if(!lbTouchStart||e.changedTouches.length!==1){lbTouchStart=null;return}
+  const deltaX=e.changedTouches[0].clientX-lbTouchStart.x;
+  const deltaY=e.changedTouches[0].clientY-lbTouchStart.y;
+  lbTouchStart=null;
+  if(Math.abs(deltaX)<50||Math.abs(deltaX)<=Math.abs(deltaY)*1.2)return;
+  showLightboxImage(lbIndex+(deltaX<0?1:-1));
+},{passive:true});
+$("#lb").addEventListener("touchcancel",()=>{lbTouchStart=null},{passive:true});
 document.addEventListener("keydown",e=>{
   if(!$("#lb").classList.contains("open"))return;
   if(e.key==="Escape")$("#lb").classList.remove("open");
